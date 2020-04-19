@@ -1,13 +1,13 @@
 import React, { Component } from 'react';
 
-class App extends Component {
+class List extends Component {
   render() {
     return (
       <div>
-        {this.props.children}
+        <h2>List组件</h2>
       </div>
     );
   }
 }
 
-export default App;
+export default List;
