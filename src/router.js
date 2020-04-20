@@ -12,6 +12,9 @@ import Notice from './pages/ui/notice';
 import Butto from './pages/ui/tabs';
 import Gallery from './pages/ui/gallery';
 import Carousel from './pages/ui/carousel';
+import FormLogin from './pages/form/login';
+import Register from './pages/form/register';
+import Basic from './pages/table/basic';
 
 class IRouter extends Component {
   render() {
@@ -32,6 +35,9 @@ class IRouter extends Component {
                     <Route path='/admin/ui/tabs' component={Butto}></Route>
                     <Route path='/admin/ui/gallery' component={Gallery}></Route>
                     <Route path='/admin/ui/carousel' component={Carousel}></Route>
+                    <Route path='/admin/form/login' component={FormLogin}></Route>
+                    <Route path='/admin/form/reg' component={Register}></Route>
+                    <Route path='/admin/table/basic' component={Basic}></Route>
                     <Route component={NoMatch}></Route>
                   </Switch>
                 </Admin>
