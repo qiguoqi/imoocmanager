@@ -1,22 +1,39 @@
 import React, { Component } from 'react';
-import { Table, Card } from 'antd';
+import { Table, Card, Button, Modal, message} from 'antd';
 import axios from '../../axios';
 import '../../data/table1';
+import utils from '../../utils/utils';
 
 class Basic extends Component {
 
   state = {
     selectedRowKeys: [],
-    selectedItem: {}
+    selectedItem: {},
   };
 
+  params = {
+    page: 1
+  }
+
   componentDidMount() {
+    this.request();
+  }
+
+  request = () => {
+    let _this = this;
     axios.ajax({
-      url: 'data.php'
+      url: 'data.php',
+      params: {
+        page: this.params.page
+      }
     }).then(res => {
-      console.log("1",res.data);
+      console.log("1",res.result.data);
       this.setState(() => ({
-        data: res.data
+        data: res.result.data,
+        pagination: utils.pagination(res, (current) => {
+          _this.params.page = current;
+          this.request();
+        })
       }))
     })
   }
@@ -28,8 +45,19 @@ class Basic extends Component {
       selectedRowKeys: selectKey,
       selectedItem: record
     }, () => {
-      console.log(this.state.selectedRowKeys)
+      console.log("888", this.state.selectedRowKeys);
     });
+  }
+
+  handleDelete = () => {
+    console.log("handleDelete",this.state.selectedRowKeys);
+    Modal.confirm({
+      title: "删除确认",
+      content: "您确定要删除这些数据吗？",
+      onOk: () => {
+        message.success("删除成功");
+      }
+    })
   }
 
   render() {
@@ -64,11 +92,7 @@ class Basic extends Component {
         dataIndex: 'time',
       }
     ];
-    let { seletedRowKeys } = this.state;
-    const rowSelection = {
-      type: "radio",
-      seletedRowKeys
-    }
+    console.log("pagination",this.state.pagination);
     return (
       <div>
         <Card title="动态数据渲染表格-mock" className="Card">
@@ -80,18 +104,37 @@ class Basic extends Component {
           />
         </Card>
         <Card title="mock-单选" className="Card">
+          <div>
+            <Button onClick={this.handleDelete}>删除选中数据</Button>
+          </div>
           <Table
             dataSource={this.state.data}
             columns={columns}
             bordered
             pagination={false}
-            rowSelection={rowSelection}
+            rowSelection={{type: 'checkbox', 
+                           selectedRowKeys: this.state.selectedRowKeys,
+                           onChange: (selectedRowKeys, selectedRows) => {
+                             this.setState(()=>({
+                               selectedRowKeys,
+                               selectedRows
+                             }))
+                           }
+                         }}
             onRow={(record,index) => {
               return {
-                onChange: () => {this.onRowClick(record, index)},
+                // onChange: () => {this.onRowClick(record, index)},
                 onClick: () => {this.onRowClick(record, index)},
               };
             }}
+          />
+        </Card>
+        <Card title="mock-分页" className="Card">
+          <Table
+            dataSource={this.state.data}
+            columns={columns}
+            bordered
+            pagination={this.state.pagination}
           />
         </Card>
       </div>

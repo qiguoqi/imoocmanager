@@ -2,8 +2,11 @@ import Mock from 'mockjs';
 
 Mock.mock("data.php", "get", function(options){
   return Mock.mock({
-    "data|10":[
-      {
+    result:{
+      page_size: 10,
+      "page|1": [0,1,2,3,4,5,6,7,8,9],
+      total: 100,
+      "data|10":[{
         "key|+1": 0,
         "userName|1": "@cname",
         "gender|1": ["男", "女"],
@@ -12,8 +15,8 @@ Mock.mock("data.php", "get", function(options){
         "birthday": "2000-1-1",
         "address|1": "@city",
         "time": "7:00"
-      }
-    ]
+      }]
+    }
   })
 });
 
