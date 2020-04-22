@@ -20,7 +20,7 @@ class Modals extends Component {
           <Button type="primary" onClick={() => this.handleModal1Show('showModal3')}>顶部20px弹框</Button>
           <Button type="primary" onClick={() => this.handleModal1Show('showModal4')}>水平垂直居中</Button>
         </Card>
-        <Card title="基础模态框" className="Card">
+        <Card title="信息确认框" className="Card">
           <Button type="primary" onClick={() => this.handleConfirm('confirm')}>Confirm</Button>
           <Button type="primary" onClick={() => this.handleConfirm('info')}>Info</Button>
           <Button type="primary" onClick={() => this.handleConfirm('success')}>Success</Button>
