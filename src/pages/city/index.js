@@ -32,7 +32,7 @@ class City extends Component {
         data: list,
         pagination:Utils.pagination(res,(current)=>{
           _this.params.page = current;
-          _this.requestList();
+          _this.request();
         })
       }));
     });
