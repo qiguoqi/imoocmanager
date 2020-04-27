@@ -19,6 +19,7 @@ import HighBasic from './pages/table/highBasic';
 import City from './pages/city';
 import Order from './pages/order';
 import Common from './Common';
+import OrderDetail from './pages/order/Detail';
 
 class IRouter extends Component {
   render() {
@@ -54,7 +55,7 @@ class IRouter extends Component {
               return (
                 <Common>
                   <Switch>
-                    <Route path='/common/order/detail/:orderId' component={Login}></Route>
+                    <Route path='/common/order/detail/:orderId' component={OrderDetail}></Route>
                   </Switch>
                 </Common>
               )

@@ -13,3 +13,16 @@
     padding: 20px;
   }
 }
+
+ul, li {
+  list-style: none;
+}
+
+.clearfix {
+  &::after {
+    content: " ";
+    clear: both;
+    display: block;
+    visibility: hidden;
+  }
+}
