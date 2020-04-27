@@ -80,6 +80,18 @@ class Order extends Component {
     });
   }
 
+  openOrderDetail = () => {
+    let item = this.state.selectedItem;
+    if (!item) {
+      Modal.warning({
+        title: "信息",
+        content: "请选择一条订单"
+      });
+      return ;
+    }
+    window.open(`/#/common/order/detail/${item.order_sn}`, '_blank');
+  }
+
   render() {
     const columns = [
       {
@@ -154,7 +166,7 @@ class Order extends Component {
           <FilterForm />
         </Card>
         <Card style={{marginTop: 10}}>
-          <Button type="primary">订单详情</Button>
+          <Button type="primary" onClick={this.openOrderDetail}>订单详情</Button>
           <Button type="primary" onClick={this.handleOrderEnd}>结束订单</Button>
         </Card>
         <div>
