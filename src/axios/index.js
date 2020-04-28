@@ -1,7 +1,30 @@
 import JsonP from 'jsonp';
 import axios from 'axios';
+import Utils from '../utils/utils';
 
 export default class Axios {
+  static request(_this, url, params) {
+    const data = {
+      params
+    };
+    this.ajax({
+      url,
+      data
+    }).then(data => {
+      let list = data.result.data.map((item, index) => {
+        item.key = index;
+        return item;
+      });
+      _this.setState(() => ({
+        data: list,
+        pagination:Utils.pagination(data,(current)=>{
+          _this.params.page = current;
+          _this.request();
+        })
+      }));
+    })
+  }
+
   static jsonp(options) {
       return new Promise((resolve, reject) => {
           JsonP(options.url, {

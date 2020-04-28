@@ -4,6 +4,8 @@ import axios from '../../axios/index';
 import Utils from '../../utils/utils';
 import "../../data/order";
 import '../../data/orderEnd';
+import BaseForm from '../../components/baseForm';
+import ETable from '../../components/ETable';
 
 const Option = Select.Option;
 const FormItem = Form.Item;
@@ -24,24 +26,38 @@ class Order extends Component {
     page: 1
   }
 
+  handleFilter = (params) => {
+    this.params = params;
+    this.request();
+    console.log("哈哈哈哈", params);
+  }
+
+  formList = [
+    {
+      type: "SELECT",
+      label: "城市",
+      field: 'city',
+      placeholder: "全部",
+      initialValue: "1",
+      width: 100,
+      list: [{id: "0", name: "全部"}, {id: "1", name: "北京"}, {id: "2", name: "深圳"}, {id: "3", name: "上海"}]
+    },
+    {
+      type: "时间查询"
+    },
+    {
+      type: "SELECT",
+      label: "订单状态",
+      field: 'status',
+      placeholder: "全部",
+      initialValue: "1",
+      width: 100,
+      list: [{id: "0", name: "全部"}, {id: "1", name: "进行中"}, {id: "2", name: "结束行程"}]
+    }
+  ]
+
   request = () => {
-    let _this = this;
-    axios.ajax({
-      url: "data2.php"
-    }).then(res => {
-      console.log("1",res);
-      let list = res.result.data.map((item, index) => {
-        item.key = index;
-        return item;
-      });
-      this.setState(() => ({
-        data: list,
-        pagination:Utils.pagination(res,(current)=>{
-          _this.params.page = current;
-          _this.request();
-        })
-      }));
-    });
+    axios.request(this, 'data2.php');
   }
 
   handleOrderEnd = () => {
@@ -67,17 +83,6 @@ class Order extends Component {
     message.success("订单结束成功");
     this.setState(()=>({show: false}));
     this.request();
-  }
-
-  onRowClick = (record, index) => {
-    let selectKey = [index];
-    console.log("7", record.bike_sn, index);
-    this.setState({
-      selectedRowKeys: selectKey,
-      selectedItem: record
-    }, () => {
-      console.log("888", this.state.selectedRowKeys);
-    });
   }
 
   openOrderDetail = () => {
@@ -150,39 +155,28 @@ class Order extends Component {
       span: 10
     }
   }
-  const rowSelection = {
-    type: 'checkbox', 
-    selectedRowKeys: this.state.selectedRowKeys,
-    onChange: (selectedRowKeys, selectedRows) => {
-      this.setState(()=>({
-        selectedRowKeys,
-        selectedRows
-      }))
-    }
-  }
+  
+  console.log("render",this.state.selectedRowKeys);
     return (
       <div>
         <Card>
-          <FilterForm />
+          <BaseForm formList={this.formList} filterSubmit={this.handleFilter} />
         </Card>
         <Card style={{marginTop: 10}}>
           <Button type="primary" onClick={this.openOrderDetail}>订单详情</Button>
           <Button type="primary" onClick={this.handleOrderEnd}>结束订单</Button>
         </Card>
         <div>
-        <Table
-          bordered
-          columns={columns}
-          dataSource={this.state.data}
-          pagination={this.state.pagination}
-          rowSelection={rowSelection}
-          onRow={(record,index) => {
-            return {
-              onChange: () => {this.onRowClick(record, index)},
-              onClick: () => {this.onRowClick(record, index)},
-            };
-          }}
-        />
+          <ETable
+            updateSelectedItem={Utils.updateSelectedItem.bind(this)}
+            columns={columns}
+            dataSource={this.state.data}
+            pagination={this.state.pagination}
+            selectedRowKeys={this.state.selectedRowKeys}
+            selectedItem={this.state.selectedItem}
+            selectedIds={this.state.selectedIds}
+            rowSelection="checkbox"
+          />
         </div>
         <Modal
           title="结束订单"
@@ -209,63 +203,5 @@ class Order extends Component {
     );
   }
 }
-
-class FilterForm extends Component {
-  render() {
-    const { getFieldDecorator } = this.props.form;
-    return (
-      <Form layout="inline">
-        <FormItem label="城市">
-          {
-            getFieldDecorator("city_id")(
-              <Select
-                placeholder="全部"
-                style={{width: 100}}
-              >
-                <Option value="">全部</Option>
-                <Option value="1">北京市</Option>
-                <Option value="2">天津市</Option>
-                <Option value="3">深圳市</Option>
-              </Select>
-            )
-          }
-        </FormItem>
-        <FormItem label="订单时间">
-          {
-            getFieldDecorator("start_time")(
-              <DatePicker showTime placeholder="请选择时间"/>
-            )
-          }
-        </FormItem>
-        <FormItem label=" ~ ">
-          {
-            getFieldDecorator("end_time")(
-              <DatePicker showTime placeholder="请选择时间"/>
-            )
-          }
-        </FormItem>
-        <FormItem label="订单状态">
-          {
-            getFieldDecorator("order_status")(
-              <Select
-                placeholder="全部"
-                style={{width: 100}}
-              >
-                <Option value="">全部</Option>
-                <Option value="1">进行中</Option>
-                <Option value="2">结束行程</Option>
-              </Select>
-            )
-          }
-        </FormItem>
-        <FormItem>
-          <Button type="primary">查询</Button>
-          <Button>重置</Button>
-        </FormItem>
-      </Form>
-    )
-  }
-}
-FilterForm = Form.create({})(FilterForm);
 
 export default Order;

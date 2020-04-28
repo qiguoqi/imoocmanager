@@ -7,7 +7,7 @@ Mock.mock("data2.php", 'get', function() {
       "page_size": 10,
       "total": 85,
       "data|10": [{
-        "id": 95,
+        "id|+1": 95,
         "order_sn": /T180[0-9]{6}/,
         "bike_sn": "800116",
         "user_id": 908362,
