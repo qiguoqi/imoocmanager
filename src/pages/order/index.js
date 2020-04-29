@@ -175,7 +175,7 @@ class Order extends Component {
             selectedRowKeys={this.state.selectedRowKeys}
             selectedItem={this.state.selectedItem}
             selectedIds={this.state.selectedIds}
-            rowSelection="checkbox"
+            rowSelection="radio"
           />
         </div>
         <Modal

@@ -20,7 +20,8 @@ import City from './pages/city';
 import Order from './pages/order';
 import Common from './Common';
 import OrderDetail from './pages/order/Detail';
-import User from './pages/user'
+import User from './pages/user';
+import BikeMap from './pages/map/bikeMap';
 
 class IRouter extends Component {
   render() {
@@ -48,6 +49,7 @@ class IRouter extends Component {
                     <Route path='/admin/city' component={City}></Route>
                     <Route path='/admin/order' component={Order}></Route>
                     <Route path='/admin/user' component={User}></Route>
+                    <Route path='/admin/bikeMap' component={BikeMap}></Route>
                     <Route component={NoMatch}></Route>
                   </Switch>
                 </Admin>
@@ -62,11 +64,10 @@ class IRouter extends Component {
                 </Common>
               )
             } }>
-
             </Route>
+            
           </App>
         </Switch>
-        
       </Router>
     );
   }

@@ -187,7 +187,7 @@ class UserForm extends Component {
     }
     const {getFieldDecorator} = this.props.form;
     const type = this.props.type;
-    const userInfo = this.props.userInfo || {};
+    const userInfo = this.props.userInfo || [];
     console.log("userInfo", userInfo);
     return (
       <Form layout="horizontal">
