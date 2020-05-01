@@ -47,6 +47,5 @@ export default {
         selectedItem: selectedRows
       }))
     }
-    
   }
 }

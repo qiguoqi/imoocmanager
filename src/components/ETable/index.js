@@ -10,7 +10,7 @@ class ETable extends Component {
       let rowSelectedKeys = [index];
       let selectedItem = record;
       this.props.updateSelectedItem(rowSelectedKeys, selectedItem);
-    } else {
+    } else if (rowSelection === "checkbox"){
       let selectedRowKeys = this.props.selectedRowKeys;
       let selectedItem = this.props.selectedItem;
       let selectedIds = this.props.selectedIds;
