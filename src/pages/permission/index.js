@@ -1,10 +1,11 @@
 import React, { Component } from 'react';
-import { Button, Card, Form, Select, Input, Modal, Tree } from 'antd';
+import { Button, Card, Form, Select, Input, Modal, Tree, Transfer } from 'antd';
 import ETable from '../../components/ETable';
 import Utils from '../../utils/utils';
 import axios from '../../axios';
 import '../../data/permissionList';
 import menuConfig from '../../config/menuConfig';
+import "../../data/userList";
 
 const TreeNode = Tree.TreeNode;
 const Option = Select.Option;
@@ -57,6 +58,72 @@ class PermissionUser extends Component {
     axios.request(this, "permissionList.php");
   }
 
+  handleUserAuth = () => {
+    let item = this.state.selectedItem;
+    if (!item) {
+      Modal.warning({title: "提示",content:"请选择一个角色"});
+      return ;
+    }
+    this.setState(() => ({
+      isUserVisible: true,
+      detailInfo: item
+    }));
+    this.getRoleUserList();
+    console.log("handleUserAuth");
+  }
+
+  getRoleUserList = () => {
+    axios.ajax({
+      url: "userList.php"
+    }).then(res => {
+      if (res) {
+        console.log("res.result.data", res.result.data);
+        this.getAuthUserList(res.result.data);
+        
+      }
+    })
+  }
+
+  getAuthUserList = (dataSource) => {
+    const mockData = [];
+    const targetKeys = [];
+    console.log("getAuthUserList", dataSource);
+    if (dataSource && dataSource.length > 0) {
+      console.log("if");
+      for (let i=0; i < dataSource.length; i++) {
+        const data = {
+          key: dataSource[i].user_id,
+          title: dataSource[i].user_name,
+          status: dataSource[i].status
+        }
+        if (data.status === 1) {
+          targetKeys.push(data.key);
+        }
+        mockData.push(data);
+      }
+      console.log("mockData",mockData,targetKeys);
+      this.setState(() => ({
+        mockData,
+        targetKeys
+      }));
+    }
+  }
+
+  handleUserSubmit = () => {
+    let data = {}
+    data.user_ids = this.state.targetKeys;
+    data.role_id = this.state.selectedItem.id;
+    axios.ajax({
+      url: "userList.php",
+      params: {
+        ...data
+      }
+    }).then(res => {
+      this.setState(() => ({isUserVisible: false}));
+      axios.request(this, "userList.php");
+    })
+  }
+
   render() {
     const columns = [
       {
@@ -93,7 +160,7 @@ class PermissionUser extends Component {
         <Card>
           <Button type="primary" onClick={this.handleRole}>创建角色</Button>
           <Button type="primary" onClick={this.handlePermission}>设置权限</Button>
-          <Button type='primary'>用户授权</Button>
+          <Button type='primary' onClick={this.handleUserAuth}>用户授权</Button>
         </Card>
         <div>
           <ETable
@@ -131,6 +198,25 @@ class PermissionUser extends Component {
             }}
             menuInfo={this.state.menuInfo}
             wrappedComponentRef = {inst => this.permissionForm = inst}
+          />
+        </Modal>
+        <Modal
+          title="用户授权"
+          visible={this.state.isUserVisible}
+          width={800}
+          onOk={this.handleUserSubmit}
+          onCancel={() => {
+            this.setState(() => ({isUserVisible: false}))
+          }}
+        >
+          <RoleAuthForm
+            detailInfo={this.state.detailInfo}
+            wrappedComponentRef = {inst => this.userAuthForm = inst}
+            targetKeys={this.state.targetKeys}
+            mockData={this.state.mockData}
+            pathUserInfo={(targetKeys) => {
+              this.setState(() => ({targetKeys}))
+            }}
           />
         </Modal>
       </div>
@@ -236,5 +322,53 @@ class PermissionForm extends Component {
   }
 }
 PermissionForm = Form.create({})(PermissionForm);
+
+class RoleAuthForm extends Component {
+
+  formLayout = {
+    labelCol: {span: 5},
+    wrapperCol: {span: 15}
+  }
+
+  onCheck = (checkedKeys) => {
+    this.props.pathMenuInfo(checkedKeys);
+  }
+
+  filterOption = (inputValue, option) => {
+    return option.title.indexOf(inputValue) > -1;
+  }
+
+  handleChange = (targetKeys) => {
+    this.props.pathUserInfo(targetKeys)
+  }
+
+  render() {
+    const { getFieldDecorator } = this.props.form;
+    return (
+      <div>
+        <Form layout="horizontal">
+          <FormItem label="角色名称" {...this.formLayout}>
+            <Input disabled placeholder={this.props.detailInfo.role_name} />
+          </FormItem>
+          <FormItem label="选择用户" {...this.formLayout}>
+            <Transfer
+              listStyle={{width: 200, height: 400}}
+              dataSource={this.props.mockData}
+              titles={["已选用户", "待选用户"]}
+              showSearch
+              searchPlaceholder="请输入用户名"
+              filterOption={this.filterOption}
+              targetKeys={this.props.targetKeys}
+              render={item=>item.title}
+              onChange={this.handleChange}
+            />
+          </FormItem>
+          
+        </Form>
+      </div>
+    )
+  }
+}
+RoleAuthForm = Form.create({})(RoleAuthForm);
 
 export default PermissionUser;
